@@ -1,8 +1,9 @@
 {
   "name": "lego-mobile-nav",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Infinitely nestable semantic navigation for smaller screens.",
   "main": "src/index.js",
+  "style": "src/mobile-nav.scss",
   "scripts": {
     "build": "node build.js",
     "start": "node build.js --watch=1",
@@ -26,6 +27,7 @@
     "lego-toggle": "^2.0.0"
   },
   "devDependencies": {
+    "chokidar": "^1.6.0",
     "glob": "^7.0.3",
     "jasmine-core": "^2.4.1",
     "karma": "^0.13.22",

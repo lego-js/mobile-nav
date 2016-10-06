@@ -20,16 +20,18 @@
     }
 }
 
-$mobile-nav-background-color: #eeece7 !default;
+$mobile-nav-background-color: #f8f8f8 !default;
 $mobile-nav-font-color: #35312a !default;
 $mobile-nav-font-family: sans-serif !default;
 $mobile-nav-font-size: 1rem !default;
+$mobile-nav-header-font: inherit !default;
 $mobile-nav-header-height: 0 !default;
-$mobile-nav-arrow-url: 'data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2219%22%20height%3D%2228%22%20viewBox%3D%220%200%2019%2028%22%20preserveAspectRatio%3D%22xMidYMid%20meet%22%3E%3Cpath%20fill%3D%22#{$mobile-nav-font-color}%22%20d%3D%22M17.3%2013.7L5.7%2025.3q-.3.3-.7.3t-.7-.3l-2.6-2.6q-.3-.3-.3-.7t.3-.7L10%2013%201.7%204.7q-.3-.3-.3-.7t.3-.7L4.3.7q.3-.3.7-.3t.7.3l11.6%2011.6q.3.3.3.7t-.3.7z%22%2F%3E%3C%2Fsvg%3E' !default;
+$mobile-nav-arrow-color: $mobile-nav-font-color !default;
+$mobile-nav-arrow-url: 'data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2219%22%20height%3D%2228%22%20viewBox%3D%220%200%2019%2028%22%20preserveAspectRatio%3D%22xMidYMid%20meet%22%3E%3Cpath%20fill%3D%22#{$mobile-nav-arrow-color}%22%20d%3D%22M17.3%2013.7L5.7%2025.3q-.3.3-.7.3t-.7-.3l-2.6-2.6q-.3-.3-.3-.7t.3-.7L10%2013%201.7%204.7q-.3-.3-.3-.7t.3-.7L4.3.7q.3-.3.7-.3t.7.3l11.6%2011.6q.3.3.3.7t-.3.7z%22%2F%3E%3C%2Fsvg%3E' !default;
 $mobile-nav-main-content-selector: ".Page-content" !default;
 $mobile-nav-max-width: 400px / 16px * 1rem !default;
-$mobile-nav-max-width-percent: 80% !default;
-$mobile-nav-show: 40em !default;
+$mobile-nav-max-width-percent: 84% !default;
+$mobile-nav-show: 48em !default;
 $mobile-nav-mq-show: only screen and (max-width: #{$mobile-nav-show});
 $mobile-nav-mq-hide: only screen and (min-width: #{$mobile-nav-show + (1/16)});
 
@@ -40,9 +42,7 @@ $mobile-nav-mq-hide: only screen and (min-width: #{$mobile-nav-show + (1/16)});
     font-size: $mobile-nav-font-size;
     font-weight: bold;
     max-width: $mobile-nav-max-width;
-    overflow-x: hidden;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow: hidden;
     position: fixed;
     right: 0;
     top: $mobile-nav-header-height;
@@ -53,6 +53,7 @@ $mobile-nav-mq-hide: only screen and (min-width: #{$mobile-nav-show + (1/16)});
         border-bottom: 1px solid mix(#000, $mobile-nav-background-color, 10);
         color: $mobile-nav-font-color;
         display: block;
+        font: $mobile-nav-header-font;
         padding: .75em;
 
         &.is-active {
@@ -103,6 +104,16 @@ $mobile-nav-mq-hide: only screen and (min-width: #{$mobile-nav-show + (1/16)});
             transition-delay: 0s;
             z-index: 5;
         }
+    }
+
+    &:not(.is-open) {
+        visibility: hidden;
+        transition: visibility 0s 0.3s;
+    }
+
+    &.is-open {
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
 }
 
