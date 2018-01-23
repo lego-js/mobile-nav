@@ -1,4 +1,4 @@
-import * as toggle from 'lego-toggle';
+import { Group, Panel, Trigger } from 'lego-toggle';
 import data from 'lego-data';
 
 const filter = (arr, fnc) => Array.prototype.filter.call(arr, fnc);
@@ -16,15 +16,15 @@ class Section {
         const nav = node.querySelector(`.${opts.subNavClass}`);
         nav.insertBefore(this.navHeader, nav.firstChild);
 
-        const panel = new toggle.Panel(node, { group, nav });
-        new toggle.Trigger(this.header, { panel });
-        new toggle.Trigger(this.navHeader, { panel });
+        const panel = new Panel(node, { group, nav });
+        new Trigger(this.header, { panel });
+        new Trigger(this.navHeader, { panel });
 
         // recursively initialize nested sections
         const subSections = filter(nav.children, node => node.tagName.toLowerCase() === 'section');
 
         if (subSections.length) {
-            const subGroup = panel.opts.subGroup = new toggle.Group({
+            const subGroup = panel.opts.subGroup = new Group({
                 state: 'open',
                 parentNode: node,
             });
@@ -45,7 +45,7 @@ export default class MobileNav {
         // initialize active section as top level container
         const parentNode = this.opts.rootSelector ? this.node.querySelector(this.opts.rootSelector) : this.node;
 
-        const group = new toggle.Group({
+        const group = new Group({
             state: 'open',
             parentNode,
         });

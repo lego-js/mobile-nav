@@ -1,6 +1,6 @@
 {
   "name": "lego-mobile-nav",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Infinitely nestable semantic navigation for smaller screens.",
   "main": "src/index.js",
   "style": "src/mobile-nav.scss",
