@@ -5,20 +5,23 @@ const filter = (arr, fnc) => Array.prototype.filter.call(arr, fnc);
 
 export let DEFAULTS = {
     rootSelector: false,
-    subNavClass: 'MobileNav-sub'
+    subNavClass: 'MobileNav-sub',
+    subNavToggleSelector: 'header',
 };
 
-class Section {
-
+export class Section {
     constructor(node, group, opts) {
         this.header = node.querySelector('header');
         this.navHeader = this.header.cloneNode(true);
         const nav = node.querySelector(`.${opts.subNavClass}`);
         nav.insertBefore(this.navHeader, nav.firstChild);
 
+        this.headerTrigger = opts.subNavToggleSelector === 'header' ? this.header : this.header.querySelector(opts.subNavToggleSelector);
+        this.navHeaderTrigger = opts.subNavToggleSelector === 'header' ? this.navHeader : this.navHeader.querySelector(opts.subNavToggleSelector);
+
         const panel = new Panel(node, { group, nav });
-        new Trigger(this.header, { panel });
-        new Trigger(this.navHeader, { panel });
+        new Trigger(this.headerTrigger, { panel });
+        new Trigger(this.navHeaderTrigger, { panel });
 
         // recursively initialize nested sections
         const subSections = filter(nav.children, node => node.tagName.toLowerCase() === 'section');
@@ -35,7 +38,6 @@ class Section {
 }
 
 export default class MobileNav {
-
     constructor(node, options = {}) {
         this.node = node;
 
@@ -56,7 +58,7 @@ export default class MobileNav {
             );
     }
 
-    setOptions(options) {
+    setOptions(options = {}) {
         Object.keys(options).forEach(key => {
             this.opts[key] = options[key];
         });

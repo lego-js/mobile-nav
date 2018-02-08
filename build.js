@@ -1,67 +1,77 @@
-const browserify = require('browserify');
+const rollup = require('rollup');
+const buble = require('rollup-plugin-buble');
 const fs = require('fs');
-const glob = require('glob');
 const Server = require('karma').Server;
 const sass = require('node-sass');
-const vfs = require('vinyl-fs');
-const source = require('vinyl-source-stream');
 const chokidar = require('chokidar');
-const watchify = require('watchify');
 const args = require('yargs').argv;
 
-function compile(entry) {
-    const bundler = browserify({ entries: [entry], debug: true }).transform('babelify', { presets: ['es2015'] });
+async function build() {
+    const jsInputConfig = {
+        input: './src/index.js',
+        plugins: [
+            buble(),
+        ],
+        external: [
+            'lego-data',
+            'lego-toggle',
+        ],
+    };
 
-    const name = entry.split('/').pop();
+    const jsOutputConfigCJS = {
+        file: './dist/index.js',
+        name: 'MobileNav',
+        format: 'cjs',
+        exports: 'named',
+    };
 
-    function rebundle() {
-        bundler.bundle()
-            .on('error', function(err) { console.error(err); this.emit('end'); })
-            .pipe(source(name))
-            .pipe(vfs.dest('./build'));
-    }
+    const jsOutputConfigIIFE = {
+        file: './dist/es5-index.js',
+        name: 'MobileNav',
+        format: 'iife',
+        globals: {
+            'lego-data': 'window.legoJsData || {}',
+            'lego-toggle': 'window.legoJsToggle || {}',
+        },
+    };
 
     if (args.watch) {
-        watchify(bundler).on('update', () => {
-            console.log('-> bundling...');
-            rebundle();
+        rollup.watch(Object.assign(
+            jsInputConfig,
+            { output: jsOutputConfigCJS }
+        )).on('event', async (event) => {
+            if (event.code !== 'BUNDLE_END') return;
+            const bundle = await rollup.rollup(jsInputConfig);
+            await bundle.write(jsOutputConfigIIFE);
+            console.log('Bundle compiled...');
+        });
+    } else {
+        const bundle = await rollup.rollup(jsInputConfig);
+        await bundle.write(jsOutputConfigCJS);
+    }
+
+    function buildSass() {
+        sass.render({
+            file: './src/index.scss',
+        }, (error, result) => {
+            if (!error) {
+                fs.writeFile(`./dist/index.css`, result.css);
+            }
         });
     }
 
-    rebundle();
+    buildSass();
+
+    if (args.watch) {
+        chokidar.watch('./src/index.scss').on('change', file => {
+            file && buildSass();
+        });
+    }
+
+    new Server({
+        configFile: __dirname + '/karma.conf.js',
+        singleRun: !args.watch
+    }).start();
 }
 
-
-glob('./src/es5-*.js', (error, files) => {
-    if(error) return;
-    files.map(compile);
-});
-
-function buildSass(file) {
-    sass.render({
-        file,
-    }, (error, result) => {
-        if (!error) {
-            const name = file.substring(file.lastIndexOf('/'), file.lastIndexOf('.'));
-            fs.writeFile(`./build/${name}.css`, result.css);
-        }
-    });
-}
-
-glob('./src/*.scss', (error, files) => {
-    if(error) return;
-    files.map(buildSass);
-});
-
-if (args.watch) {
-    chokidar.watch('./src/*.scss').on('change', file => {
-        if (file) {
-            buildSass(file);
-        }
-    });
-}
-
-new Server({
-    configFile: __dirname + '/karma.conf.js',
-    singleRun: !args.watch
-}).start();
+build();
